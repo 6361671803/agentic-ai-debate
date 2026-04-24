@@ -2,7 +2,7 @@
 Agentic AI Debate System using CrewAI and Streamlit
 
 An interactive **Agentic AI-powered debate platform** built using **CrewAI and Streamlit**, where multiple intelligent agents simulate a structured debate and provide a final decision.
-
+##video on project:https://youtu.be/4otUibIDY_4
 ---
 
 ## 📌 Overview
