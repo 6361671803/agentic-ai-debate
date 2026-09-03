@@ -2,7 +2,7 @@
 
 A multi-agent AI debate system built with [CrewAI](https://www.crewai.com/). Five agents — Optimist, Pessimist, Analyst, Fact-Checker, and Judge — argue a user-supplied topic across four rounds, grounded in live web evidence and scored by an LLM judge, with the full run exportable as a citable PDF report.
 
-📺 [Demo video](https://youtu.be/5Lfgjh95lNg?si=KBc_6-RYbzFPBP_e)
+
 
 Not just a prompt-chaining demo: it implements retrieval-augmented generation, real tool-calling agents, an LLM-as-judge evaluation pipeline, a self-critique/reflection pattern, automatic multi-provider failover, and a content-safety guardrail.
 
