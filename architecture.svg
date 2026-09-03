@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 1155" role="img" aria-label="AI Debate Arena architecture: a topic passes a moderation guardrail, is grounded by live RAG, argued by Optimist and Pessimist across two rounds where each reads the other's prior claims, verified by a Fact-Checker's own tool call and compared by an Analyst, decided by a Judge, with every turn passing through self-critique and LLM-as-judge scoring, rendered to a UI, graph, and PDF, all powered by a swappable LLM backend that auto-fails over to OpenRouter on quota exhaustion.">
+  <title>AI Debate Arena — architecture and data flow</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0a0e27"/>
+      <stop offset="1" stop-color="#1a1a4a"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#8891b0"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1040" height="1155" fill="url(#bg)"/>
+
+  <text x="520" y="34" text-anchor="middle" font-family="system-ui, sans-serif" font-size="24" font-weight="700" fill="#f5f7ff">AI Debate Arena — Architecture</text>
+  <text x="520" y="56" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12.5" fill="#8891b0">5 agents · live RAG grounding · real tool calls · LLM-as-judge evaluation · self-critique · automatic provider fallback</text>
+
+  <!-- User Input -->
+  <rect x="170" y="80" width="700" height="50" rx="10" fill="#141833" stroke="#6c7a9c" stroke-width="2"/>
+  <text x="520" y="110" text-anchor="middle" font-family="system-ui, sans-serif" font-size="15" font-weight="700" fill="#f5f7ff">User Input — Debate Topic</text>
+
+  <line x1="520" y1="130" x2="520" y2="166" stroke="#8891b0" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Moderation -->
+  <rect x="170" y="170" width="700" height="60" rx="10" fill="#141833" stroke="#6c7a9c" stroke-width="2"/>
+  <text x="520" y="194" text-anchor="middle" font-family="system-ui, sans-serif" font-size="14" font-weight="700" fill="#f5f7ff">Moderation Guardrail</text>
+  <text x="520" y="214" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10.5" fill="#a9b4d0">Rejects only clearly unsafe topics — ordinary controversial topics are allowed through</text>
+
+  <line x1="520" y1="230" x2="520" y2="266" stroke="#8891b0" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="530" y="252" font-family="system-ui, sans-serif" font-size="10.5" fill="#a9b4d0">allowed</text>
+
+  <!-- RAG -->
+  <rect x="170" y="270" width="700" height="70" rx="10" fill="#141833" stroke="#6c7a9c" stroke-width="2"/>
+  <text x="520" y="292" text-anchor="middle" font-family="system-ui, sans-serif" font-size="14" font-weight="700" fill="#f5f7ff">Live RAG Grounding</text>
+  <text x="520" y="312" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10.5" fill="#a9b4d0">Tavily (primary) → DuckDuckGo (fallback) → chunk → embed in Chroma</text>
+  <text x="520" y="330" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10.5" fill="#a9b4d0">→ retrieve top-k evidence per agent's angle</text>
+
+  <line x1="430" y1="340" x2="290" y2="386" stroke="#8891b0" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="610" y1="340" x2="750" y2="386" stroke="#8891b0" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="300" y="368" font-family="system-ui, sans-serif" font-size="10" fill="#a9b4d0">grounds</text>
+  <text x="700" y="368" font-family="system-ui, sans-serif" font-size="10" fill="#a9b4d0">grounds</text>
+
+  <!-- Round 1 -->
+  <rect x="40" y="390" width="440" height="80" rx="10" fill="#141833" stroke="#00e676" stroke-width="2"/>
+  <text x="260" y="414" text-anchor="middle" font-family="system-ui, sans-serif" font-size="16" font-weight="700" fill="#00e676">🟢 Optimist</text>
+  <text x="260" y="436" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#cdeedb">Advantages, grounded in retrieved evidence</text>
+  <text x="260" y="454" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#8fae9c">may call web_search / calculator tools</text>
+
+  <rect x="560" y="390" width="440" height="80" rx="10" fill="#141833" stroke="#ff5252" stroke-width="2"/>
+  <text x="780" y="414" text-anchor="middle" font-family="system-ui, sans-serif" font-size="16" font-weight="700" fill="#ff5252">🔴 Pessimist</text>
+  <text x="780" y="436" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#f3d2d2">Risks, grounded in retrieved evidence</text>
+  <text x="780" y="454" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#b58f8f">may call web_search / calculator tools</text>
+
+  <!-- Round1 -> Round2: own continuation -->
+  <line x1="260" y1="470" x2="260" y2="526" stroke="#8891b0" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="780" y1="470" x2="780" y2="526" stroke="#8891b0" stroke-width="2" marker-end="url(#arrow)"/>
+  <!-- cross-reads: the actual rebuttal mechanism -->
+  <line x1="560" y1="470" x2="480" y2="526" stroke="#ffd740" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="480" y1="470" x2="560" y2="526" stroke="#ffd740" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="520" y="510" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9.5" fill="#ffd740">each reads the</text>
+  <text x="520" y="521" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9.5" fill="#ffd740">other's R1 claims</text>
+
+  <!-- Round 2 -->
+  <rect x="40" y="530" width="440" height="80" rx="10" fill="#141833" stroke="#00e676" stroke-width="2"/>
+  <text x="260" y="554" text-anchor="middle" font-family="system-ui, sans-serif" font-size="15" font-weight="700" fill="#00e676">🟢 Optimist — Rebuttal</text>
+  <text x="260" y="576" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10.5" fill="#cdeedb">Responds directly to Pessimist's R1 claims</text>
+
+  <rect x="560" y="530" width="440" height="80" rx="10" fill="#141833" stroke="#ff5252" stroke-width="2"/>
+  <text x="780" y="554" text-anchor="middle" font-family="system-ui, sans-serif" font-size="15" font-weight="700" fill="#ff5252">🔴 Pessimist — Counter</text>
+  <text x="780" y="576" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10.5" fill="#f3d2d2">Responds directly to Optimist's R1 claims</text>
+
+  <line x1="260" y1="610" x2="260" y2="646" stroke="#8891b0" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="780" y1="610" x2="780" y2="646" stroke="#8891b0" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="270" y="632" font-family="system-ui, sans-serif" font-size="10" fill="#a9b4d0">claims</text>
+  <text x="710" y="632" font-family="system-ui, sans-serif" font-size="10" fill="#a9b4d0">claims</text>
+
+  <!-- Round 3 -->
+  <rect x="40" y="650" width="440" height="100" rx="10" fill="#141833" stroke="#b388ff" stroke-width="2"/>
+  <text x="260" y="674" text-anchor="middle" font-family="system-ui, sans-serif" font-size="16" font-weight="700" fill="#b388ff">🔍 Fact-Checker</text>
+  <text x="260" y="696" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10.5" fill="#dccdfa">Reads all claims from R1 + R2 (both sides)</text>
+  <text x="260" y="714" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10.5" fill="#dccdfa">Own web_search tool call → verdict per claim:</text>
+  <text x="260" y="732" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10.5" font-weight="700" fill="#b388ff">SUPPORTED / UNVERIFIED / CONTRADICTED</text>
+
+  <rect x="560" y="650" width="440" height="100" rx="10" fill="#141833" stroke="#ffd740" stroke-width="2"/>
+  <text x="780" y="674" text-anchor="middle" font-family="system-ui, sans-serif" font-size="16" font-weight="700" fill="#ffd740">🟡 Analyst</text>
+  <text x="780" y="696" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10.5" fill="#f3ecc9">Reads all claims from R1 + R2 (both sides)</text>
+  <text x="780" y="714" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10.5" fill="#f3ecc9">Compares both sides logically</text>
+  <text x="780" y="732" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10.5" fill="#f3ecc9">produces a balanced comparison</text>
+
+  <line x1="380" y1="750" x2="470" y2="786" stroke="#8891b0" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="660" y1="750" x2="570" y2="786" stroke="#8891b0" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="330" y="772" font-family="system-ui, sans-serif" font-size="10" fill="#a9b4d0">fact-check report</text>
+  <text x="640" y="772" font-family="system-ui, sans-serif" font-size="10" fill="#a9b4d0">analysis</text>
+
+  <!-- Judge -->
+  <rect x="170" y="790" width="700" height="70" rx="10" fill="#141833" stroke="#40c4ff" stroke-width="2"/>
+  <text x="520" y="816" text-anchor="middle" font-family="system-ui, sans-serif" font-size="16" font-weight="700" fill="#40c4ff">⚖️ Judge — Verdict</text>
+  <text x="520" y="838" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#cfe8ff">Reads Analysis + Fact-Check Report → final decision with reasons</text>
+
+  <line x1="520" y1="860" x2="520" y2="886" stroke="#8891b0" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Reflection + Evaluation (applies to every turn above) -->
+  <rect x="170" y="890" width="700" height="60" rx="10" fill="#141833" stroke="#8891b0" stroke-width="2" stroke-dasharray="6,4"/>
+  <text x="520" y="912" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12.5" font-weight="700" fill="#f5f7ff">Every turn above (Optimist → Judge) also passes through:</text>
+  <text x="520" y="932" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10.5" fill="#a9b4d0">Self-critique → revise if issues found → LLM-as-judge score (relevance / grounding / coherence)</text>
+
+  <line x1="520" y1="950" x2="520" y2="981" stroke="#8891b0" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="530" y="970" font-family="system-ui, sans-serif" font-size="10.5" fill="#a9b4d0">renders</text>
+
+  <!-- Output -->
+  <rect x="40" y="985" width="300" height="70" rx="10" fill="#141833" stroke="#ffb74d" stroke-width="2"/>
+  <text x="190" y="1011" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13.5" font-weight="700" fill="#ffb74d">Streamlit UI</text>
+  <text x="190" y="1031" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#e6d3b3">Live cards per round + sources</text>
+
+  <rect x="370" y="985" width="300" height="70" rx="10" fill="#141833" stroke="#ffb74d" stroke-width="2"/>
+  <text x="520" y="1011" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13.5" font-weight="700" fill="#ffb74d">Confidence Graph</text>
+  <text x="520" y="1031" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#e6d3b3">Real LLM-judge scores per agent</text>
+
+  <rect x="700" y="985" width="300" height="70" rx="10" fill="#141833" stroke="#ffb74d" stroke-width="2"/>
+  <text x="850" y="1011" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13.5" font-weight="700" fill="#ffb74d">PDF Report</text>
+  <text x="850" y="1031" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#e6d3b3">Scores + full transcript + sources</text>
+
+  <line x1="40" y1="1075" x2="1000" y2="1075" stroke="#3a4166" stroke-width="1" stroke-dasharray="4,4"/>
+
+  <!-- LLM Backend -->
+  <rect x="40" y="1075" width="960" height="60" rx="10" fill="#141833" stroke="#8891b0" stroke-width="2"/>
+  <text x="520" y="1099" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" font-weight="700" fill="#f5f7ff">LLM Backend (swappable): Ollama · OpenAI · Gemini · OpenRouter</text>
+  <text x="520" y="1119" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10.5" fill="#a9b4d0">Auto-fails over to OpenRouter's free tier on quota/rate-limit — powers every agent above</text>
+</svg>

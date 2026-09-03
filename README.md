@@ -15,6 +15,8 @@ Not just a prompt-chaining demo: it implements retrieval-augmented generation, r
 
 Every agent turn is scored by a separate LLM-as-judge call (relevance / grounding / coherence / overall) and passes through a self-critique step before being finalized. The full run — arguments, scores, and sources — can be exported as a PDF.
 
+![AI Debate Arena architecture: topic through moderation, live RAG grounding, two rounds of Optimist/Pessimist argument where each round reads the other side's prior claims, Fact-Checker and Analyst verifying and comparing, Judge delivering the verdict, every turn passing through self-critique and LLM-as-judge scoring, rendered to UI/graph/PDF, all on a swappable LLM backend with automatic OpenRouter fallback](architecture.svg)
+
 ## Architecture
 
 | File | Responsibility |
