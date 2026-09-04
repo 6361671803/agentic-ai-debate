@@ -131,6 +131,13 @@ fact_checker = Agent(
 ALL_AGENTS = [optimist, pessimist, analyst, judge, fact_checker]
 
 
+_QUOTA_SIGNALS = ("429", "resource_exhausted", "quota", "rate limit", "rate_limit")
+
+
+def is_quota_error(exc: Exception) -> bool:
+    return any(signal in str(exc).lower() for signal in _QUOTA_SIGNALS)
+
+
 def switch_to_fallback() -> bool:
     """Point every agent at the OpenRouter fallback LLM. Returns False if
     there's no fallback configured or it's already active."""

@@ -274,12 +274,7 @@ Memory: {mem}
         return {"text": text, "sources": [], "revised": False, "issues": []}
 
 
-_QUOTA_SIGNALS = ("429", "resource_exhausted", "quota", "rate limit", "rate_limit")
-
-
-def _is_quota_error(exc: Exception) -> bool:
-    msg = str(exc).lower()
-    return any(signal in msg for signal in _QUOTA_SIGNALS)
+_is_quota_error = agents.is_quota_error
 
 # ---------- SAFE FORMAT FUNCTION (🔥 MAIN FIX) ----------
 def safe_format(text):

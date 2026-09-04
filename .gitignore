@@ -7,5 +7,6 @@ __pycache__/
 chroma_store/
 *.pdf
 evaluations.jsonl
+moderation_eval_results.jsonl
 *.log
 .vscode/
