@@ -81,11 +81,18 @@ def _extract_json(raw: str) -> dict | None:
         return None
 
 
+_UNAVAILABLE_REASON = "Moderation is temporarily unavailable, so this topic can't be checked right now. Please try again shortly."
+
+
 def check_topic(topic: str, active_llm) -> dict:
-    """Returns {"allowed": bool, "reason": str}. Fails open (allowed=True)
-    if the moderation call itself errors, so a transient API issue never
-    blocks a legitimate debate — the guardrail is a courtesy check, not a
-    hard security boundary."""
+    """Returns {"allowed": bool, "reason": str}. Fails CLOSED (allowed=False)
+    if no LLM can produce a usable verdict — on a quota error it retries
+    against the OpenRouter fallback first, but if that also fails, or either
+    LLM returns a response that can't be parsed into a verdict, the topic is
+    rejected rather than let through unchecked. This is a deliberate
+    availability tradeoff: during a full moderation outage, no debate can
+    start at all, but no topic ever reaches the agents without an actual
+    safety verdict behind it."""
     if not topic or not topic.strip():
         return {"allowed": False, "reason": "Topic is empty."}
 
@@ -99,16 +106,16 @@ def check_topic(topic: str, active_llm) -> dict:
             try:
                 raw = agents.get_active_llm().call(prompt)
             except Exception:
-                logger.exception("Moderation fallback call also failed; failing open")
-                return {"allowed": True, "reason": ""}
+                logger.exception("Moderation fallback call also failed; failing closed")
+                return {"allowed": False, "reason": _UNAVAILABLE_REASON}
         else:
-            logger.exception("Topic moderation call failed; failing open")
-            return {"allowed": True, "reason": ""}
+            logger.exception("Topic moderation call failed; failing closed")
+            return {"allowed": False, "reason": _UNAVAILABLE_REASON}
 
     verdict = _extract_json(raw)
     if not verdict or "allowed" not in verdict:
-        logger.warning("Topic moderation returned unparseable/incomplete response; failing open. Raw: %r", raw)
-        return {"allowed": True, "reason": ""}
+        logger.warning("Topic moderation returned unparseable/incomplete response; failing closed. Raw: %r", raw)
+        return {"allowed": False, "reason": _UNAVAILABLE_REASON}
 
     result = {"allowed": bool(verdict["allowed"]), "reason": verdict.get("reason", "")}
     logger.info("Topic moderation verdict for %r: %s", topic[:120], result)
